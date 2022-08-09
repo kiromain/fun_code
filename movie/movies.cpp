@@ -21,6 +21,7 @@ at a "certain" address (the parameter of inserted data are title, year and score
 
 using namespace std;
 
+
 struct Movie{
 	string title;
 	int rok;
