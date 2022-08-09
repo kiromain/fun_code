@@ -2,6 +2,8 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
+
+//THIS CODE CAN HAVE MINOR ISSUES IF U TRY RUNNING IN CODEBLOCKS ON MAC
 /*
 1. Create a pointer of inserted data from a file which file name is provided by the user.
 Create a function which insert a movie with "some" data in the end of the list(pointer) starting
