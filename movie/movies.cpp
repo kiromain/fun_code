@@ -3,34 +3,32 @@
 #include <cstdlib>
 #include <string>
 /*
-1. Crreate
-1. Tworzy listê z danych jak w zadaniu p1, wczytywanych z pliku o nazwie podanej przez
-u¿ytkownika - korzystaj¹c z funkcji do³¹czania jednego filmu o jakichœ danych na koñcu
-listy zaczynaj¹cej siê pod jakimœ adresem (parametrem funkcji do³¹czania jest tylko adres
-pocz¹tku listy oraz tytu³, rok i ocena do³¹czanego filmu)
-2. Napisaæ funkcjê, która:
-a. Do listy dopisuje nowy element przed ka¿dym filmem o tytule zaczynaj¹cym siê
-liter¹ 'P' oraz ocen¹ wiêksz¹ od liczby podanej przez u¿ytkownika oraz przed
-ka¿dym filmem o tytule zaczynaj¹cym siê liter¹ 'G' oraz ocen¹ wiêksz¹ od œredniej
-oceny wszystkich filmów. Nowy element jest uzupe³niany danymi drugiego od
-koñca filmu na liœcie.
-b. Z listy usuwa co drugi element o parzystym roku.
-3. Drukujê listê przed oraz po wywo³aniu funkcji z podpunktu 2.
-4. Na koñcu usuwa listê z pamiêci.
+1. Create a pointer of inserted data from a file which file name is provided by the user.
+Create a function which insert a movie with "some" data in the end of the list(pointer) starting
+at a "certain" address (the parameter of inserted data are title, year and score).
+
+2. Create a function that:
+     a. Add a new element to the list(pointer) before every movie staring with leter 'P' and
+     with a score higher than a number given by an user, also before the title starting with
+     letter 'G' and a score higher than an avarage score of all movies. New element is completed
+     by the data second from the end.
+     b. Delete every second element from a list(pointer) with an even year.
+3. Print a list before and after running a functions from point 2.
+4. Delete list.
 */
 
 using namespace std;
 
 struct Movie{
-	string tytul;
+	string title;
 	int rok;
 	double ocena;
 	Movie *nast;
 };
 
-void dodaj(Movie *&adres,string tytul, int rok, double ocena){
+void dodaj(Movie *&adres,string title, int rok, double ocena){
 	Movie *aktualny = new Movie;
-	aktualny->tytul = tytul;
+	aktualny->title = title;
 	aktualny->rok = rok;
 	aktualny->ocena = ocena;
 
@@ -41,29 +39,29 @@ void dodaj(Movie *&adres,string tytul, int rok, double ocena){
 		adres->nast = aktualny;
 		aktualny->nast = NULL;
 	}else{
-		dodaj(adres->nast,tytul,rok,ocena);
+		dodaj(adres->nast,title,rok,ocena);
 	}
 }
 
 void drukuj(Movie *adres){
 	if(adres==NULL)
 		return;
-	cout<<adres->tytul<<" "<<adres->rok<<" "<<adres->ocena<<endl;
+	cout<<adres->title<<" "<<adres->rok<<" "<<adres->ocena<<endl;
 	drukuj(adres->nast);
 }
 
-void zad2i3(Movie *&adres,int liczba,double srednia,int ile,string tytul,int rok,double ocena){
+void zad2i3(Movie *&adres,int liczba,double srednia,int ile,string title,int rok,double ocena){
 	Movie *nowy,*poprzedni,*aktualny, *temp;
 	poprzedni = NULL;
 	aktualny=adres;
 	// a dodawanie elementow;
 	while(aktualny!=NULL){
-		//cout<<adres->tytul[0]<<endl;
-		if(aktualny->ocena > liczba && aktualny->tytul[0] == 'P'){
-			//insert(&adres,tytul,rok,ocena);
+		//cout<<adres->title[0]<<endl;
+		if(aktualny->ocena > liczba && aktualny->title[0] == 'P'){
+			//insert(&adres,title,rok,ocena);
 			nowy = new Movie();
 
-			nowy->tytul=tytul;
+			nowy->title=title;
 			nowy->rok=rok;
 			nowy->ocena=ocena;
 
@@ -74,10 +72,10 @@ void zad2i3(Movie *&adres,int liczba,double srednia,int ile,string tytul,int rok
 				poprzedni->nast = nowy;
 				nowy->nast = aktualny;
 			}
-		}else if(aktualny->ocena > srednia && aktualny->tytul[0] == 'G'){
+		}else if(aktualny->ocena > srednia && aktualny->title[0] == 'G'){
 			nowy = new Movie();
 
-			nowy->tytul=tytul;
+			nowy->title=title;
 			nowy->rok=rok;
 			nowy->ocena=ocena;
 
@@ -139,31 +137,31 @@ int main()
 	aktualny = NULL;
 	glowa = NULL;
 
-	string tytul;
+	string title;
 	int rok;
 	double ocena;
 	double suma=0;
 	int ile=0;
-	//elemnty drugie od konca
-	string dktytul;
+	//elements second from the end
+	string dktitle;
 	int dkrok;
 	double dkocena;
-	//ostatnie elementy
-	string otytul;
+	//last elements
+	string otitle;
 	int orok;
 	double oocena;
 
 	while(plik.peek() != EOF){
-		plik>>tytul>>rok>>ocena;
+		plik>>title>>rok>>ocena;
 		suma+=ocena;
 		ile++;
-		dktytul=otytul;
+		dktitle=otitle;
 		dkrok=orok;
 		dkocena=oocena;
-		otytul=tytul;
+		otitle=title;
 		orok=rok;
 		oocena=ocena;
-		dodaj(glowa,tytul,rok,ocena);
+		dodaj(glowa,title,rok,ocena);
 	}
 	double srednia=suma/ile;
 	cout<<"Lista przed zadaniem 2: "<<endl;
@@ -171,7 +169,7 @@ int main()
 	cout<<endl;
 	cout<<"Srednia ocen: "<<srednia<<endl;
 	cout<<endl;
-	cout<<"Element przed ostatni z listy: "<<dktytul<<" "<<dkrok<<" "<<dkocena<<endl;
+	cout<<"Element przed ostatni z listy: "<<dktitle<<" "<<dkrok<<" "<<dkocena<<endl;
 	cout<<endl;
 	//2 i 3
 	int liczba;
@@ -180,7 +178,7 @@ int main()
 		cin>>liczba;
 	}while(liczba<1 || liczba>10);
 	cout<<endl;
-	zad2i3(glowa,liczba,srednia,ile,dktytul,dkrok,dkocena);
+	zad2i3(glowa,liczba,srednia,ile,dktitle,dkrok,dkocena);
 
 	//4
 	while(glowa != NULL){
