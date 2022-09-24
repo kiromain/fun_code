@@ -29,22 +29,25 @@ public:
           for(const std::shared_ptr<Tree> node:children) countsub++;
           return countsub;
      }
-     void GetAllSubCount(int s,int e)const
+     int GetAllSubCount()const
      {
-          int count1[7];
-          std::vector<int>::iterator u;
-          int get=0; // getallsubcount
-          for(u=children[s].begin();u!=children[s].end();u++){
-               if(*u==e) continue;
-               GetAllSubCount(*u,s);
-               count1[s]+=count1[*u];
+          int getallsubcount=0;
+          for(const std::shared_ptr<Tree> node:children){
+               int countsub = node->GetAllSubCount()+1;
+               getallsubcount+=countsub;
+
           }
-          std::cout<<count1[0]<<std::endl;
+          return getallsubcount;
 
      }
-     void Del(int nest) const
+     void Del(int nest)
      {
+          children.erase(children.begin()+nest);
+     }
 
+     void delete(std::vector<std::shared_ptr<Tree>> children;)
+     {
+          children.reset();
      }
 };
 
@@ -59,26 +62,26 @@ int main()
      std::shared_ptr<Tree> galaz2_2 = galaz2->AddSub("galaz 2.2");
      std::shared_ptr<Tree> galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.2");
      root->print(0);
+     std::cout<<std::endl;
 
-     uint32_t rootChildrenCnt = root->GetSubCount();
-     uint32_t galaz1childrenCount = galaz1->GetSubCount();
-     uint32_t countOfAllChildren = root->GetAllSubCount(1,0);
+     uint32_t rootChildrenCnt = root->GetSubCount(); // result shall be 3
+     uint32_t galaz1childrenCount = galaz1->GetSubCount(); // result shall be 1
+     uint32_t countOfAllChildren = root->GetAllSubCount(); // result shall be 7 (recursive children counting)
      std::cout<<"root children: "<<rootChildrenCnt<<std::endl;
      std::cout<<"galaz1 children: "<<galaz1childrenCount<<std::endl;
      std::cout<<"countOfAllChildren: "<<countOfAllChildren<<std::endl;
 
-     root->Del(1);
-/*
-     uint32 rootChildrenCnt = root->GetSubCount(); // result shall be 3
-     uint32 galaz1childrenCount = galaz1->GetSubCount(); // result shall be 1
-     uint32 countOfAllChildren = root->GetAllSubCount();  // result shall be 7 (recursive children counting)
-
+     std::cout<<std::endl;
      root->Del(1); // will remove galaz_2 with all it's children (recursive), so in a result only galaz_1 and galaz_3 will stay
+     root->print(0);
+     std::cout<<std::endl;
 
-     uint32 rootChildrenCnt _v2 = root->GetSubCount(); // result shall be 2
-     uint32 countOfAllChildren _v2 = root->GetAllSubCount(); // result shall be 3 (recursive children counting)
+     uint32_t rootChildrenCnt_v2 = root->GetSubCount(); // result shall be 2
+     uint32_t countOfAllChildren_v2 = root->GetAllSubCount(); // result shall be 3 (recursive children counting)
+     std::cout<<"root children: "<<rootChildrenCnt_v2<<std::endl;
+     std::cout<<"countOfAllChildren: "<<countOfAllChildren_v2<<std::endl;
+     std::cout<<std::endl;
 
      delete(root); // deleting root shall remove all children (recursive) and clean memory
-*/
      return 0;
 }
