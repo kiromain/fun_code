@@ -1,51 +1,13 @@
 #include <iostream>
-#include <memory>
-#include <string>
 #include <vector>
 
 class Tree
 {
+public:
+     Tree();
 private:
      std::string name;
-     std::vector<std::shared_ptr<Tree>> children;
-public:
-     Tree(const std::string &name):name(name) { }
-
-     std::shared_ptr<Tree> AddSub(const std::string &name)
-     {
-          std::shared_ptr<Tree> node=std::make_shared<Tree>(name);
-          children.push_back(node);
-          return node;
-     }
-     void print(int nest)const
-     {
-          std::cout<<std::string(nest,'\t')<<name<<std::endl;
-          ++nest;
-          for(const std::shared_ptr<Tree> node:children) node->print(nest);
-     }
-     int GetSubCount()
-     {
-          int countsub=0;
-          for(const std::shared_ptr<Tree> node:children) countsub++;
-          return countsub;
-     }
-     void GetAllSubCount(int s,int e)const
-     {
-          int count1[7];
-          std::vector<int>::iterator u;
-          int get=0; // getallsubcount
-          for(u=children[s].begin();u!=children[s].end();u++){
-               if(*u==e) continue;
-               GetAllSubCount(*u,s);
-               count1[s]+=count1[*u];
-          }
-          std::cout<<count1[0]<<std::endl;
-
-     }
-     void Del(int nest) const
-     {
-
-     }
+     std::vector<Tree> children;
 };
 
 int main()
@@ -62,7 +24,7 @@ int main()
 
      uint32_t rootChildrenCnt = root->GetSubCount();
      uint32_t galaz1childrenCount = galaz1->GetSubCount();
-     uint32_t countOfAllChildren = root->GetAllSubCount(1,0);
+     uint32_t countOfAllChildren = root->GetAllSubCount();
      std::cout<<"root children: "<<rootChildrenCnt<<std::endl;
      std::cout<<"galaz1 children: "<<galaz1childrenCount<<std::endl;
      std::cout<<"countOfAllChildren: "<<countOfAllChildren<<std::endl;
