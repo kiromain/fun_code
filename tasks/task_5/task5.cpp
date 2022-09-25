@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <sstream>
 
 class Tree
 {
@@ -17,11 +18,22 @@ public:
           children.push_back(node);
           return node;
      }
-     void print(int nest)const
+     void print(int nest, bool ok)const
      {
-          std::cout<<std::string(nest,'\t')<<name<<std::endl;
-          ++nest;
-          for(const std::shared_ptr<Tree> node:children) node->print(nest);
+          if(ok){
+               std::string n=".";
+               std::string a="";
+               for(int i=0;i<nest;i++){
+                    std::stringstream ss;
+                    ss<<nest;
+                    std::string str=ss.str();
+                    a=a+str;
+                    a=a+n;
+               }
+               std::cout<<std::string(nest,'\t')<<a<<name<<std::endl;
+               ++nest;
+               for(const std::shared_ptr<Tree> node:children) node->print(nest,ok);
+          }
      }
      int GetSubCount()
      {
@@ -56,7 +68,7 @@ int main()
      std::shared_ptr<Tree> galaz2_1 = galaz2->AddSub("galaz 2.1");
      std::shared_ptr<Tree> galaz2_2 = galaz2->AddSub("galaz 2.2");
      std::shared_ptr<Tree> galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.2");
-     root->print(0);
+     root->print(0,true);
      std::cout<<std::endl;
 
      uint32_t rootChildrenCnt = root->GetSubCount(); // result shall be 3
@@ -68,7 +80,7 @@ int main()
 
      std::cout<<std::endl;
      root->Del(1); // will remove galaz_2 with all it's children (recursive), so in a result only galaz_1 and galaz_3 will stay
-     root->print(0);
+     root->print(0,true);
      std::cout<<std::endl;
 
      uint32_t rootChildrenCnt_v2 = root->GetSubCount(); // result shall be 2
@@ -76,6 +88,5 @@ int main()
      std::cout<<"root children: "<<rootChildrenCnt_v2<<std::endl;
      std::cout<<"countOfAllChildren: "<<countOfAllChildren_v2<<std::endl;
      std::cout<<std::endl;
-     //delete(root); // deleting root shall remove all children (recursive) and clean memory
      return 0;
 }
