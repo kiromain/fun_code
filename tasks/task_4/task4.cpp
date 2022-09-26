@@ -76,6 +76,8 @@ int main()
      std::cout<<"root children: "<<rootChildrenCnt_v2<<std::endl;
      std::cout<<"countOfAllChildren: "<<countOfAllChildren_v2<<std::endl;
      std::cout<<std::endl;
+
+
      //delete(root); // deleting root shall remove all children (recursive) and clean memory
      return 0;
 }

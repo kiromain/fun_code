@@ -18,21 +18,15 @@ public:
           children.push_back(node);
           return node;
      }
-     void print(int nest, bool ok)const
+     void print(int nest, bool ok,std::string prefix = "")const
      {
-          if(ok){
-               std::string n=".";
-               std::string a="";
-               for(int i=0;i<nest;i++){
-                    std::stringstream ss;
-                    ss<<nest;
-                    std::string str=ss.str();
-                    a=a+str;
-                    a=a+n;
-               }
-               std::cout<<std::string(nest,'\t')<<a<<name<<std::endl;
-               ++nest;
-               for(const std::shared_ptr<Tree> node:children) node->print(nest,ok);
+          std::cout<<std::string(nest,'\t');
+          if(ok) std::cout<<prefix<<" ";
+          std::cout<<name<<std::endl;
+
+          for(int i=0;i<children.size();i++){
+               std::string new_prefix = prefix + std::to_string(i + 1) + '.';
+               children[i]->print(nest, ok, new_prefix);
           }
      }
      int GetSubCount()
