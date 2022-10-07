@@ -18,6 +18,7 @@ public:
      void printlist();
      void add(T data);
      int getcounts();
+     T getfromtop();
      int getsize();
 
      Node< T > *head, *tail;
@@ -62,6 +63,13 @@ void List< T >::printlist()
 }
 
 template <class T>
+T List< T >::getfromtop()
+{
+     if(tail != NULL) return tail->data;
+     else exit(1);
+}
+
+template <class T>
 int List< T >::getcounts()
 {
      Node<T> *current;
@@ -80,7 +88,12 @@ int List< T >::getcounts()
 template <class T>
 int List< T >::getsize()
 {
-     return sizeof(*head);
+     int sizeinbytes=0;
+     while(head != NULL){
+          sizeinbytes += sizeof(head);
+          head = head->next;
+     }
+     return sizeinbytes;
 }
 
 int main()
@@ -90,11 +103,16 @@ int main()
      list1.add(5);
      list1.add(6);
      list1.add(7);
+     list1.add(9);
+     list1.add(11);
 
      list1.printlist();
 
      cout<<"Number of elements: ";
      cout<<list1.getcounts()<<endl;
+
+     cout<<"Return a number from the top: ";
+     cout<<list1.getfromtop()<<endl;;
 
      cout<<"Size of the list in bytes: ";
      cout<<list1.getsize()<<endl;
