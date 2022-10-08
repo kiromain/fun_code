@@ -65,8 +65,27 @@ void List< T >::printlist()
 template <class T>
 T List< T >::getfromtop()
 {
-     if(tail != NULL) return tail->data;
+     Node<T> *current = head;
+
+     while(current->next->next!=NULL) current=current->next;
+
+     if(current->next!=NULL) cout<<current->next->data<<endl;
      else exit(1);
+
+     if(head!=NULL){
+          if(head->next == NULL){
+               head = NULL;
+          }else{
+               Node<T> *temp = head;
+               while(temp->next->next != NULL){
+                    temp = temp->next;
+               }
+               Node<T> *lastnode = temp->next;
+               temp->next = NULL;
+               delete lastnode;
+          }
+     }
+
 }
 
 template <class T>
@@ -88,10 +107,13 @@ int List< T >::getcounts()
 template <class T>
 int List< T >::getsize()
 {
+     Node<T> *current;
+     current = head;
+
      int sizeinbytes=0;
-     while(head != NULL){
-          sizeinbytes += sizeof(head);
-          head = head->next;
+     while(current != NULL){
+          sizeinbytes += sizeof(current);
+          current = current->next;
      }
      return sizeinbytes;
 }
@@ -111,10 +133,13 @@ int main()
      cout<<"Number of elements: ";
      cout<<list1.getcounts()<<endl;
 
-     cout<<"Return a number from the top: ";
-     cout<<list1.getfromtop()<<endl;;
-
      cout<<"Size of the list in bytes: ";
      cout<<list1.getsize()<<endl;
+
+     cout<<"Return a number from the top: ";
+     list1.getfromtop();
+
+     cout<<"Return a number from the top: ";
+     list1.getfromtop();
 
 }
