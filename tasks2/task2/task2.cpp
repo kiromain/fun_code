@@ -4,23 +4,25 @@ using namespace std;
 
 template <class T> class Node
 {
+
 public:
      T data;
-     Node *next;
+     Node *next = NULL;
 };
 
-template <class T> class List
+
+template <class T> class Stack
 {
 public:
      void printlist();
-     void addLIFO(T data);
+     void add(T data);
      int getcounts();
      T getfromtop();
      int getsize();
 
      Node< T > *head, *tail;
 
-     List()
+     Stack()
      {
           head = NULL;
           tail = NULL;
@@ -28,13 +30,12 @@ public:
 };
 
 template <class T>
-void List< T >::addLIFO( T data )
+void Stack< T >::add( T data )
 {
      Node <T> *p = new Node<T>;
      p->data = data;
 
      if(head == NULL){
-          head  = new Node<T>;
           head = p;
           tail = head;
      }else{
@@ -45,7 +46,7 @@ void List< T >::addLIFO( T data )
 }
 
 template <class T>
-void List< T >::printlist()
+void Stack< T >::printlist()
 {
      Node<T> *current;
 
@@ -60,31 +61,37 @@ void List< T >::printlist()
 }
 
 template <class T>
-T List< T >::getfromtop()
+T Stack< T >::getfromtop()
 {
      Node<T> *current = head;
 
-     while(current->next->next!=NULL) current=current->next;
+     int count1 = getcounts();
 
-     if(current->next!=NULL) cout<<current->next->data<<endl;
+     if(count1 == 1)
+     {
+          T data1 = current->data;
 
-     if(head!=NULL){
-          if(head->next == NULL){
-               head = NULL;
-          }else{
-               Node<T> *temp = head;
-               while(temp->next->next != NULL){
-                    temp = temp->next;
-               }
-               Node<T> *lastnode = temp->next;
-               temp->next = NULL;
-               delete lastnode;
-          }
+          delete head;
+          head = NULL;
+          tail = NULL;
+
+          return data1;
+     }else{
+          while(current->next->next != NULL ) current = current->next;
+
+          T data1 = current->next->data;
+          current->next = NULL;
+          delete tail;
+          tail = current;
+
+          return data1;
      }
+
 }
 
+
 template <class T>
-int List< T >::getcounts()
+int Stack< T >::getcounts()
 {
      Node<T> *current;
 
@@ -100,7 +107,7 @@ int List< T >::getcounts()
 }
 
 template <class T>
-int List< T >::getsize()
+int Stack< T >::getsize()
 {
      Node<T> *current;
      current = head;
@@ -113,24 +120,27 @@ int List< T >::getsize()
      return sizeinbytes;
 }
 
-// zadanie 2
 template <class T>
-class Inher : public List<T>
+class Inher : public Stack<T>
 {
 public:
 
      T getfrombottom()
      {
-          Node<T> *current;
-          current = this->head;
+          int count1 = this->getcounts();
+          Node<T> *current = this->head;
 
-          if(current!=NULL) cout<<current->data<<endl;
-          else exit(1);
+          if(count1 == 1)
+          {
+               T data = current->data;
+               delete this->head;
+               this->head = NULL;
+               this->tail = NULL;
 
-          Node<T> *temp = this->head;
-          this->head = this->head->next;
+               return data;
+          }else{
 
-          delete temp;
+          }
      }
 
      T getfromanywhere(int x)
@@ -165,6 +175,7 @@ public:
           {
                new_ele->next = this->head;
                this->head = new_ele;
+               this->tail = this->head;
           }else{
                Node<T> *temp = this->head;
 
@@ -178,39 +189,37 @@ public:
 
 };
 
-
 int main()
 {
-     List<int> list1;
+     /*Stack<int> stack1;
 
-     /*list1.addLIFO(5);
-     list1.addLIFO(6);
-     list1.addLIFO(7);
-     list1.addLIFO(9);
-     list1.addLIFO(11);
+     stack1.add(5);
+     stack1.add(6);
+     stack1.add(7);
+     stack1.add(9);
+     stack1.add(11);
 
-     list1.printlist();
+     stack1.printlist();
 
      cout<<"Number of elements: ";
-     cout<<list1.getcounts()<<endl;
+     cout<<stack1.getcounts()<<endl;
+
+     cout<<"Size of the stack in bytes: ";
+     cout<<stack1.getsize()<<endl;
 
      cout<<"Return a number from the top: ";
-     list1.getfromtop();
+     cout<<stack1.getfromtop()<<endl;
 
      cout<<"Return a number from the top: ";
-     list1.getfromtop();
+     cout<<stack1.getfromtop()<<endl;*/
 
-     cout<<"Size of the list in bytes: ";
-     cout<<list1.getsize()<<endl;*/
-
-     //zadanie 2
      Inher<int> inher;
 
-     inher.addLIFO(5);
-     inher.addLIFO(6);
-     inher.addLIFO(7);
-     inher.addLIFO(9);
-     inher.addLIFO(11);
+     inher.add(5);
+     inher.add(6);
+     inher.add(7);
+     inher.add(9);
+     inher.add(11);
 
      inher.printlist();
 

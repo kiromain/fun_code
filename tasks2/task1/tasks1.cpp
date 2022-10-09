@@ -7,13 +7,12 @@ template <class T> class Node
 
 public:
      T data;
-     Node *next;
+     Node *next = NULL;
 };
 
 
-template <class T> class List
+template <class T> class Stack
 {
-
 public:
      void printlist();
      void add(T data);
@@ -23,7 +22,7 @@ public:
 
      Node< T > *head, *tail;
 
-     List()
+     Stack()
      {
           head = NULL;
           tail = NULL;
@@ -31,13 +30,12 @@ public:
 };
 
 template <class T>
-void List< T >::add( T data )
+void Stack< T >::add( T data )
 {
      Node <T> *p = new Node<T>;
      p->data = data;
 
      if(head == NULL){
-          head  = new Node<T>;
           head = p;
           tail = head;
      }else{
@@ -48,7 +46,7 @@ void List< T >::add( T data )
 }
 
 template <class T>
-void List< T >::printlist()
+void Stack< T >::printlist()
 {
      Node<T> *current;
 
@@ -63,33 +61,37 @@ void List< T >::printlist()
 }
 
 template <class T>
-T List< T >::getfromtop()
+T Stack< T >::getfromtop()
 {
      Node<T> *current = head;
 
-     while(current->next->next!=NULL) current=current->next;
+     int count1 = getcounts();
 
-     if(current->next!=NULL) cout<<current->next->data<<endl;
-     else exit(1);
+     if(count1 == 1)
+     {
+          T data1 = current->data;
 
-     if(head!=NULL){
-          if(head->next == NULL){
-               head = NULL;
-          }else{
-               Node<T> *temp = head;
-               while(temp->next->next != NULL){
-                    temp = temp->next;
-               }
-               Node<T> *lastnode = temp->next;
-               temp->next = NULL;
-               delete lastnode;
-          }
+          delete head;
+          head = NULL;
+          tail = NULL;
+
+          return data1;
+     }else{
+          while(current->next->next != NULL ) current = current->next;
+
+          T data1 = current->next->data;
+          current->next = NULL;
+          delete tail;
+          tail = current;
+
+          return data1;
      }
 
 }
 
+
 template <class T>
-int List< T >::getcounts()
+int Stack< T >::getcounts()
 {
      Node<T> *current;
 
@@ -105,7 +107,7 @@ int List< T >::getcounts()
 }
 
 template <class T>
-int List< T >::getsize()
+int Stack< T >::getsize()
 {
      Node<T> *current;
      current = head;
@@ -118,28 +120,29 @@ int List< T >::getsize()
      return sizeinbytes;
 }
 
+
 int main()
 {
-     List<int> list1;
+     Stack<int> stack1;
 
-     list1.add(5);
-     list1.add(6);
-     list1.add(7);
-     list1.add(9);
-     list1.add(11);
+     stack1.add(5);
+     stack1.add(6);
+     stack1.add(7);
+     stack1.add(9);
+     stack1.add(11);
 
-     list1.printlist();
+     stack1.printlist();
 
      cout<<"Number of elements: ";
-     cout<<list1.getcounts()<<endl;
+     cout<<stack1.getcounts()<<endl;
 
      cout<<"Size of the list in bytes: ";
-     cout<<list1.getsize()<<endl;
+     cout<<stack1.getsize()<<endl;
 
      cout<<"Return a number from the top: ";
-     list1.getfromtop();
+     cout<<stack1.getfromtop()<<endl;
 
      cout<<"Return a number from the top: ";
-     list1.getfromtop();
+     cout<<stack1.getfromtop()<<endl;
 
 }
