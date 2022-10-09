@@ -11,8 +11,6 @@ public:
 
 template <class T> class List
 {
-protected:
-     //Node< T > *head, *tail;
 public:
      void printlist();
      void addLIFO(T data);
@@ -205,6 +203,7 @@ int main()
      cout<<"Size of the list in bytes: ";
      cout<<list1.getsize()<<endl;*/
 
+     //zadanie 2
      Inher<int> inher;
 
      inher.addLIFO(5);
@@ -215,22 +214,16 @@ int main()
 
      inher.printlist();
 
-
-
-     //cout<<"Return a number from the bottom: ";
-     //inher.getfrombottom();
-
      int x;
      cout<<"Choose a position from 1 to "<<inher.getcounts()<<" you want to return: ";
      cin>>x;
 
-     if(x>inher.getcounts()-1) cout<<"The number is to big"<<endl;
+     if(x>inher.getcounts()) cout<<"The number is to big"<<endl;
      else if(x<1) cout<<"The number is invalid"<<endl;
      else{
           cout<<"The number from "<<x<<" position is: ";
           inher.getfromanywhere(x);
      }
-
      inher.printlist();
 
      int y;
@@ -240,12 +233,10 @@ int main()
      if(y>inher.getcounts()) cout<<"The number is to big"<<endl;
      else if(y<1) cout<<"The number is invalid"<<endl;
      else inher.addmiddle(15,y);
-
      inher.printlist();
 
      cout<<"Return a number from the bottom: ";
      inher.getfrombottom();
-
      inher.printlist();
 
 }
