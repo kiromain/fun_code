@@ -65,6 +65,8 @@ T Stack< T >::getfromtop()
 {
      Node<T> *current = head;
 
+     if ( current == NULL ) return;
+
      int count1 = getcounts();
 
      if(count1 == 1)
@@ -128,6 +130,8 @@ public:
      T getfrombottom()
      {
           int count1 = this->getcounts();
+          if(this->head == NULL) cout<<"List is empty"<<endl;
+
           Node<T> *current = this->head;
 
           if(count1 == 1)
@@ -139,7 +143,12 @@ public:
 
                return data;
           }else{
+               T data = current->data;
 
+               this->head = current->next;
+               delete current;
+
+               return data;
           }
      }
 
@@ -148,21 +157,39 @@ public:
           Node<T> *current = this->head;
           if(this->head == NULL) cout<<"List is empty"<<endl;
 
+          int counts = this->getcounts();
+
           if(x == 0)
           {
-               cout<<current->data;
+               T data = current->data;
                this->head = current->next;
                delete current;
+               return data;
+
+          }else if(x == counts-1){
+
+               while(current->next->next != NULL ) current = current->next;
+
+               T data1 = current->next->data;
+               current->next = NULL;
+               delete this->tail;
+               this->tail = current;
+
+               return data1;
+
+          }else{
+
+               for(int i=0;current != NULL && i < x-1; i++) current = current->next;
+
+               T data = current->next->data;
+
+               Node<T> *next = current->next->next;
+               delete current->next;
+
+               current->next = next;
+
+               return data;
           }
-
-          for(int i=0;current != NULL && i < x-2; i++) current = current->next;
-
-          cout<<current->next->data<<endl;
-
-          Node<T> *next = current->next->next;
-          delete current->next;
-
-          current->next = next;
      }
 
      void addmiddle(T data,int x)
@@ -171,7 +198,7 @@ public:
           new_ele->data = data;
           new_ele->next = NULL;
 
-          if(x == 1)
+          if(x == 0)
           {
                new_ele->next = this->head;
                this->head = new_ele;
@@ -179,7 +206,7 @@ public:
           }else{
                Node<T> *temp = this->head;
 
-               while(--x > 1) temp = temp->next;
+               while(--x > 0) temp = temp->next;
 
                new_ele->next = temp->next;
                temp->next = new_ele;
@@ -191,28 +218,6 @@ public:
 
 int main()
 {
-     /*Stack<int> stack1;
-
-     stack1.add(5);
-     stack1.add(6);
-     stack1.add(7);
-     stack1.add(9);
-     stack1.add(11);
-
-     stack1.printlist();
-
-     cout<<"Number of elements: ";
-     cout<<stack1.getcounts()<<endl;
-
-     cout<<"Size of the stack in bytes: ";
-     cout<<stack1.getsize()<<endl;
-
-     cout<<"Return a number from the top: ";
-     cout<<stack1.getfromtop()<<endl;
-
-     cout<<"Return a number from the top: ";
-     cout<<stack1.getfromtop()<<endl;*/
-
      Inher<int> inher;
 
      inher.add(5);
@@ -224,28 +229,28 @@ int main()
      inher.printlist();
 
      int x;
-     cout<<"Choose a position from 1 to "<<inher.getcounts()<<" you want to return: ";
+     cout<<"Choose a position from 0 to "<<inher.getcounts()-1<<" you want to return: ";
      cin>>x;
 
-     if(x>inher.getcounts()) cout<<"The number is to big"<<endl;
-     else if(x<1) cout<<"The number is invalid"<<endl;
+     if(x>inher.getcounts()-1) cout<<"The number is to big"<<endl;
+     else if(x<0) cout<<"The number is invalid"<<endl;
      else{
-          cout<<"The number from "<<x<<" position is: ";
-          inher.getfromanywhere(x);
+          cout<<"The number from position "<<x<<" is: ";
+          cout<<inher.getfromanywhere(x)<<endl;
      }
      inher.printlist();
 
      int y;
-     cout<<"Choose a position from 1 to "<<inher.getcounts()<<" you want to insert a data: ";
+     cout<<"Choose a position from 0 to "<<inher.getcounts()-1<<" you want to insert a data: ";
      cin>>y;
 
      if(y>inher.getcounts()) cout<<"The number is to big"<<endl;
-     else if(y<1) cout<<"The number is invalid"<<endl;
+     else if(y<0) cout<<"The number is invalid"<<endl;
      else inher.addmiddle(15,y);
      inher.printlist();
 
      cout<<"Return a number from the bottom: ";
-     inher.getfrombottom();
+     cout<<inher.getfrombottom()<<endl;
      inher.printlist();
 
 }
