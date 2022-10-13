@@ -11,6 +11,14 @@ public:
 
      Tree(const string &name):name(name) { }
 
+     ~Tree()
+     {
+          for(const Tree* node:children)
+          {
+               delete node;
+          }
+     };
+
      Tree* AddSub(const string &name)
      {
           Tree *node= new Tree(name);
@@ -24,6 +32,40 @@ public:
           cout<<string(nest,'\t')<<name<<endl;
           ++nest;
           for(const Tree *node:children) node->print(nest);
+     }
+
+     uint32_t GetSubCount()
+	{
+          return this->children.size();
+	}
+
+	uint32_t GetAllSubCount() const
+	{
+          uint32_t getall = 0;
+          for(const Tree* node:children)
+          {
+               uint32_t countsub = node->GetAllSubCount()+1;
+               getall+=countsub;
+          }
+          return getall;
+	}
+
+	void Del(int nest)
+	{
+	     delete children[nest];
+          children.erase(children.begin()+nest);
+	}
+
+	void print1(int nest, bool ok,string prefix = "")const
+     {
+          cout<<std::string(nest,'\t');
+          if(ok) cout<<prefix<<"";
+          cout<<name<<endl;
+
+          for(int i=0;i<children.size();i++){
+               string new_prefix = prefix + to_string(i + 1) + '.';
+               children[i]->print1(nest+1, ok, new_prefix);
+          }
      }
 };
 
@@ -39,4 +81,33 @@ int main()
      Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.2");
      // after execution
      root->print(0);
+     cout<<endl;
+     root->print1(0,true);
+     cout<<endl;
+
+     uint32_t rootChildrenCnt = root->GetSubCount(); // result shall be 3
+     uint32_t galaz1childrenCount = galaz1->GetSubCount(); // result shall be 1
+     uint32_t countOfAllChildren = root->GetAllSubCount(); // result shall be 7 (recursive children counting)
+     cout<<"rootChildrenCnt :"<<rootChildrenCnt<<endl;
+     cout<<"galaz1childrenCount :"<<galaz1childrenCount<<endl;
+     cout<<"countOfAllChildren :"<<countOfAllChildren<<endl;
+
+     root->Del(1); // will remove galaz_2 with all it's children (recursive), so in a result only galaz_1 and galaz_3 will stay
+     root->print(0);
+     cout<<endl;
+     root->print1(0,true);
+     cout<<endl;
+
+     uint32_t rootChildrenCnt_v2 = root->GetSubCount(); // result shall be 2
+     uint32_t countOfAllChildren_v2 = root->GetAllSubCount(); // result shall be 3 (recursive children counting)
+     std::cout<<"root children: "<<rootChildrenCnt_v2<<std::endl;
+     std::cout<<"countOfAllChildren: "<<countOfAllChildren_v2<<std::endl;
+     cout<<endl;
+
+     cout<<endl;
+
+     delete(root);  // deleting root shall remove all children (recursive) and clean memory
+     root = NULL;
+
+     cout<<"lol"<<endl;
 }
