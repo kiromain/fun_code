@@ -1,10 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
 class Tree
 {
+private:
+     ofstream ofs;
 public:
      string name ;
      vector<Tree*> children;
@@ -25,7 +28,6 @@ public:
           children.push_back(node);
           return node;
      }
-
 
      void print(int nest)const
      {
@@ -67,6 +69,20 @@ public:
                children[i]->print1(nest+1, ok, new_prefix);
           }
      }
+
+     void save(int nest, ofstream &ofs) const
+     {
+
+          ofs<<string(nest,'\t')<<name<<endl;
+          ++nest;
+          for(const Tree *node:children)
+          {
+               //ofs<<string(nest,'\t')<<name<<endl;
+               //os.write((char*)&n,sizeof(n));
+               node->save(nest,ofstream {"serialize.txt"});
+          }
+
+     }
 };
 
 int main()
@@ -84,6 +100,9 @@ int main()
      cout<<endl;
      root->print1(0,true);
      cout<<endl;
+
+     root->save(0,ofstream{"serialize.txt"});
+     cout<<1<<endl;
 
      uint32_t rootChildrenCnt = root->GetSubCount(); // result shall be 3
      uint32_t galaz1childrenCount = galaz1->GetSubCount(); // result shall be 1
@@ -104,7 +123,7 @@ int main()
      std::cout<<"countOfAllChildren: "<<countOfAllChildren_v2<<std::endl;
      cout<<endl;
 
-     cout<<endl;
+
 
      delete(root);  // deleting root shall remove all children (recursive) and clean memory
      root = NULL;
