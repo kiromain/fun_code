@@ -76,34 +76,6 @@ class BitIterator {
     };
 };
 
-vector<char> data_;
-uint32_t bitsOccupied_ = 0;
-
-uint32_t calculateRequiredAdditionalBytes(uint32_t const bits){
-        uint32_t wholeBytes = bits / 8;
-        if (bits % 8 != 0) wholeBytes++;
-        return wholeBytes;
-}
-
-void ensureSufficientCapacity(uint32_t const bitLength) {
-        uint32_t const availableBits = data_.size() * 8 - bitsOccupied_;
-          cout<<bitLength<<" "<<bitsOccupied_<<endl;
-        cout<<"data 1: "<<availableBits<<" "<<data_.size()<<endl;
-
-        if (availableBits < bitLength) {
-            uint32_t const requiredAdditionalBits = bitLength - availableBits;
-            uint32_t const requiredAdditionalBytes =
-                    calculateRequiredAdditionalBytes(requiredAdditionalBits);
-            data_.insert(data_.end(), requiredAdditionalBytes, char(0));
-
-            cout<<"r1: "<<requiredAdditionalBits<<endl;
-            cout<<"r2: "<<requiredAdditionalBytes<<endl;
-        }
-
-        cout<<"data 2: "<<data_.size()<<endl;
-
-        bitsOccupied_+=bitLength;
-}
 int main()
 {
      /*
@@ -116,15 +88,5 @@ int main()
      BitStream->Add(16, &Var5);
      BitStream->Add(4, &Var6);
      */
-     ensureSufficientCapacity(4);
-     cout<<endl;
-     ensureSufficientCapacity(5);
-     cout<<endl;
-     ensureSufficientCapacity(16);
-     cout<<endl;
-     ensureSufficientCapacity(18);
-     /*vector<char> data_;
-     uint32_t av = data_.size()*8;
-     auto const availableBits = data_.size() * 8;
-     cout<<av<<" "<<availableBits<<endl;*/
+
 }
