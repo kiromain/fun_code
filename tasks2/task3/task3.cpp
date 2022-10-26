@@ -2,50 +2,129 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <bitset>
+#include <cstddef>
 
 using namespace std;
 
-class bitstream
-{
-private:
-     uint32_t bit_pos=0;
+class BitStream {
+    vector<char> data_;
+    uint32_t bitsOccupied_ = 0;
+
+    uint32_t calculateRequiredAdditionalBytes(uint32_t const bits){
+        auto wholeBytes = bits / 8;
+        if (bits % 8 != 0) wholeBytes++;
+        return wholeBytes;
+    }
+
+    void ensureSufficientCapacity(uint32_t const bitLength) {
+        auto const availableBits = data_.size() * 8 - bitsOccupied_;
+
+        if (availableBits < bitLength) {
+            auto const requiredAdditionalBits = bitLength - availableBits;
+            auto const requiredAdditionalBytes =
+                    calculateRequiredAdditionalBytes(requiredAdditionalBits);
+            data_.insert(data_.end(), requiredAdditionalBytes, char(0));
+        }
+    }
+
 public:
-     uint32_t Add(uint32_t bitlength, void* dataAddr)
-     {
-          ofstream ofs("serialize.txt");
 
-          uint32_t p = *((uint32_t*)dataAddr);
+    uint32_t Add(uint32_t const bitLength, void* dataAddr) {
+        ensureSufficientCapacity(bitLength);
 
-          uint32_t *bits = new uint32_t[bitlength];
-          uint32_t *freememory;
+        uint32_t byteIndex = bitsOccupied_ / 8;
+        uint32_t bitIndex = bitsOccupied_ % 8;
 
-          for(int i=bit_pos;i<bit_pos+bitlength;i++){
-               bits[i] = (p>>i) & 1;
-          }
+        auto streamIterator = BitIterator(data_.data(), byteIndex, bitIndex);
+        auto dataIterator = BitIterator(static_cast<char*>(dataAddr), 0, 0);
 
-          for(int i=bit_pos+bitlength;i>bit_pos;i--){
-               ofs<<bits[i];
-          }
-          bit_pos += bitlength;
+        for (uint32_t i = uint32_t(0); i < bitLength; i++) {
+            streamIterator.assign_bit_from(dataIterator);
+            ++streamIterator;
+            ++dataIterator;
+        }
 
-          freememory = bits;
-          delete []bits;
+        bitsOccupied_ += bitLength;
 
-          return bit_pos;
-     }
+        return bitsOccupied_;
+    }
+
+class BitIterator {
+        char* source_;
+        unsigned int bit : 3;
+
+    public:
+        BitIterator(char* source, uint32_t byteOffset, uint32_t bitOffset)
+                : source_(source + byteOffset), bit(bitOffset) { }
+
+        auto operator++() -> BitIterator& {
+            if (bit == 7) ++source_;
+            ++bit;
+            return *this;
+        }
+
+        void assign_bit_from(BitIterator const other){
+            uint32_t const isOtherBitSet = (*(other.source_) & char(1 << other.bit)) == char(0);
+
+            if (isOtherBitSet) {
+                *source_ |= char(1 << bit);
+            } else {
+                *source_ &= ~char(1 << bit);
+            }
+        }
+    };
 };
 
+vector<char> data_;
+uint32_t bitsOccupied_ = 0;
 
+uint32_t calculateRequiredAdditionalBytes(uint32_t const bits){
+        uint32_t wholeBytes = bits / 8;
+        if (bits % 8 != 0) wholeBytes++;
+        return wholeBytes;
+}
+
+void ensureSufficientCapacity(uint32_t const bitLength) {
+        uint32_t const availableBits = data_.size() * 8 - bitsOccupied_;
+          cout<<bitLength<<" "<<bitsOccupied_<<endl;
+        cout<<"data 1: "<<availableBits<<" "<<data_.size()<<endl;
+
+        if (availableBits < bitLength) {
+            uint32_t const requiredAdditionalBits = bitLength - availableBits;
+            uint32_t const requiredAdditionalBytes =
+                    calculateRequiredAdditionalBytes(requiredAdditionalBits);
+            data_.insert(data_.end(), requiredAdditionalBytes, char(0));
+
+            cout<<"r1: "<<requiredAdditionalBits<<endl;
+            cout<<"r2: "<<requiredAdditionalBytes<<endl;
+        }
+
+        cout<<"data 2: "<<data_.size()<<endl;
+
+        bitsOccupied_+=bitLength;
+}
 int main()
 {
-     uint32_t var = 23423423;
-
-     bitstream->Add(4,&var);
      /*
-     int a=10;
-     char *p = (char*)&a;
-     for(int i=0;i<sizeof(a);i++){
-          cout<<hex<<static_cast<int>(*p++)<<" ";
-     }*/
-
+     int Var0 = 1234;
+     BitStream.Add(4, &Var0);
+     BitStream->Add(2, &Var1);
+     BitStream->Add(5, &Var2);
+     BitStream->Add(1, &Var3);
+     BitStream->Add(8, &Var4);
+     BitStream->Add(16, &Var5);
+     BitStream->Add(4, &Var6);
+     */
+     ensureSufficientCapacity(4);
+     cout<<endl;
+     ensureSufficientCapacity(5);
+     cout<<endl;
+     ensureSufficientCapacity(16);
+     cout<<endl;
+     ensureSufficientCapacity(18);
+     /*vector<char> data_;
+     uint32_t av = data_.size()*8;
+     auto const availableBits = data_.size() * 8;
+     cout<<av<<" "<<availableBits<<endl;*/
 }
