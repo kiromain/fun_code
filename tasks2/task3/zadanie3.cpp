@@ -6,6 +6,7 @@
 #include <cstddef>
 
 class BitStream {
+public:
      std::vector<std::byte> data_;
      std::uint32_t bitsOccupied_ = 0;
 
@@ -25,30 +26,7 @@ class BitStream {
                data_.insert(data_.end(), requiredAdditionalBytes, std::byte(0));
           }
      }
-
-public:
-
-     auto Add(std::uint32_t const bitLength, void* dataAddr) -> std::uint32_t {
-          ensureSufficientCapacity(bitLength);
-
-          auto byteIndex = bitsOccupied_ / 8;
-          auto bitIndex = bitsOccupied_ % 8;
-
-          auto streamIterator = BitIterator(data_.data(), byteIndex, bitIndex);
-          auto dataIterator = BitIterator(static_cast<std::byte*>(dataAddr), 0, 0);
-
-          for (auto i = std::uint32_t(0); i < bitLength; i++) {
-               streamIterator.assign_bit_from(dataIterator);
-               ++streamIterator;
-               ++dataIterator;
-          }
-
-          bitsOccupied_ += bitLength;
-
-          return bitsOccupied_;
-     }
-
-class BitIterator {
+     class BitIterator {
           std::byte* source_;
           unsigned int bit : 3;
 
@@ -72,10 +50,47 @@ class BitIterator {
                }
           }
      };
+
+public:
+
+     auto Add(std::uint32_t const bitLength, void* dataAddr) -> std::uint32_t {
+          ensureSufficientCapacity(bitLength);
+
+          auto byteIndex = bitsOccupied_ / 8;
+          auto bitIndex = bitsOccupied_ % 8;
+
+          auto streamIterator = BitIterator(data_.data(), byteIndex, bitIndex);
+          auto dataIterator = BitIterator(static_cast<std::byte*>(dataAddr), 0, 0);
+
+          for (auto i = std::uint32_t(0); i < bitLength; i++) {
+               streamIterator.assign_bit_from(dataIterator);
+               ++streamIterator;
+               ++dataIterator;
+          }
+
+          bitsOccupied_ += bitLength;
+
+          return bitsOccupied_;
+     }
+
+
 };
 
 int main()
 {
-     BitStream a ='4';
-     BitStream.Add(4,&a);
+     auto stream = BitStream();
+     auto x = 8;
+     auto x1 = 5;
+     stream.Add(3, &x);
+     stream.Add(3, &x1);
+     stream.Add(2, &x);
+     stream.Add(3, &x1);
+     stream.Add(3, &x1);
+     //stream.Add(2, &x);
+     //stream.Add(4, &x);
+     //stream.Add(2, &x);
+
+     std::cout << stream.data_.size() << '\n';
+     std::cout<<x<<std::endl;
+     std::cout << std::bitset<8>(static_cast<std::uint8_t>(stream.data_[0]));
 }
