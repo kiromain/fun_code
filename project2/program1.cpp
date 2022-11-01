@@ -1,57 +1,39 @@
-#include <iostream>
 #include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <iostream>
 #include <stdlib.h>
 #include <dirent.h>
-#include <sys/stat.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
 
 using namespace std;
 
-int main()
+int main(int argc, char *argv[])
 {
-     cout<<"Podaj nazwe katalogu: ";
-     string name1;
-     cin>>name1;
-     const char* name = name1.c_str();
+    int fd;
 
-     DIR *dir; // pointer zeby otworzyc katalog;
-     struct dirent *entry; // pliki znajdujacy sie w tym katalogu
+    // FIFO file path
+    cout<<"Podaj nazwe lacza: ";
+    string nazwa_lacza;
+    cin>>nazwa_lacza;
+    const char *myfifo = nazwa_lacza.c_str();
 
-     //otwiera
-     dir = opendir(name);
-     if(!dir)
-     {
-          cout<<"Nie znaleziono katalogu"<<endl;
-          return;
-     }else{
-          int fdes,res;
-          string nazwa_lacza1;
-          
-          char arr1[150];
+    if(mkfifo(myfifo, 0777) == -1){
+        perror("Blad");
+        return 1;
+    }
 
-          cout<<"Podaj nazwe lacza nazwanego : ";
-          cin>>nazwa_lacza1;
-          const char* nazwa_lacza = nazwa_lacza1.c_str();
+    fd = open(myfifo, O_WRONLY);
 
-          if(mkfifo(nazwa_lacza,S_IRUSR | S_IWUSR)<0){ 
-               perror("Blad");
-               return;
-          }else{
-               while(1)
-               {
-                    fdes = open(nazwa_lacza,O_WRONLY);
-                    fgets(arr1, 10, stdin);
-                    write(fdes,arr1,strlen(arr1)+1);
-                    close(fdes);
-               }
-          }
-     }
-     
-     //zamyka
-     closedir(dir);
-     //system("my_bash_script.sh");
+    char sentence [256];
+    printf ("Enter sentence to append: ");
+    fgets (sentence,256,stdin);
+
+    write(fd,sentence,strlen(sentence)+1);
+
+    close(fd);
+    return(0); 
 }
