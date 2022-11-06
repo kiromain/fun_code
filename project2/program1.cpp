@@ -9,31 +9,38 @@
 #include <dirent.h>
 #include <errno.h>
 
-using namespace std;
-
 int main(int argc, char *argv[])
 {
     int fd;
 
     // FIFO file path
+    /*
     cout<<"Podaj nazwe lacza: ";
     string nazwa_lacza;
     cin>>nazwa_lacza;
-    const char *myfifo = nazwa_lacza.c_str();
+    const char *myfifo = nazwa_lacza.c_str();*/
 
-    if(mkfifo(myfifo, 0777) == -1){
-        perror("Blad");
-        return 1;
+    mkfifo("myfifo", 0777);
+
+    fd = open("myfifo", O_WRONLY);
+    if(fd < 0)
+    {
+        printf("\n %s \n", strerror(errno));
+        return 0;
     }
 
-    fd = open(myfifo, O_WRONLY);
-
     char sentence [256];
-    printf ("Enter sentence to append: ");
-    fgets (sentence,256,stdin);
+    printf ("Wprowadz wiadomosc : ");
+    cin.getline(sentence,250,'END');
 
-    write(fd,sentence,strlen(sentence)+1);
+    if((write(fd,sentence,strlen(sentence)+1))<0){
+        printf("\n %s \n", strerror(errno));
+        return 0;
+    }
 
     close(fd);
     return(0); 
+
+    
 }
+system("myfile.sh");
