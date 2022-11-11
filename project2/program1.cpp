@@ -1,33 +1,61 @@
+#include <iostream>
+#include <windows.h>
 #include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
-#inlcude <string>
 
-int main(int argc, char *argv[])
+using namespace std;
+
+int main(int argc, const char **argv)
 {
-    int fd , numw;
-    char sentence [256];
-
-    fd = open("myfifo", O_WRONLY);
-    if(fd < 0)
-    {
-        printf("Nie mozna otworzyc pliku\n");
+    wcout << "Creating an instance of a named pipe..." << endl;
+    // Create a pipe to send data
+    HANDLE pipe = CreateNamedPipeW(
+        L"\\\\.\\pipe\\my_pipe", // name of the pipe
+        PIPE_ACCESS_OUTBOUND, // 1-way pipe -- send only
+        PIPE_TYPE_BYTE, // send data as a byte stream
+        1, // only allow 1 instance of this pipe
+        0, // no outbound buffer
+        0, // no inbound buffer
+        0, // use default wait timeWS
+        NULL // use default security attributes
+    );
+    if (pipe == NULL || pipe == INVALID_HANDLE_VALUE) {
+        wcout << "Failed to create outbound pipe instance.";
+        // look up error code here using GetLastError()
+        system("pause");
         return 1;
     }
-    
-    printf ("Wprowadz wiadomosc : ");
-    fgets(sentence,250,stdin);
-
-    numw = write(fd,sentence,strlen(sentence)+1);
-    if(numw < 0)
-    {
-        printf("Nie udalo sie napisac wiadomosci");
+    wcout << "Waiting for a client to connect to the pipe..." << endl;
+    // This call blocks until a client process connects to the pipe
+    BOOL result = ConnectNamedPipe(pipe, NULL);
+    if (!result) {
+        wcout << "Failed to make connection on named pipe." << endl;
+        // look up error code here using GetLastError()
+        CloseHandle(pipe); // close the pipe
+        system("pause");
         return 1;
     }
+    wcout << "Sending data to pipe..." << endl;
+    // This call blocks until a client process reads all the data
+    wchar_t buffer[256];
+    fgetws(buffer,256,stdin);
 
-    close(fd);
-    return 0; 
+    DWORD numBytesWritten = 0;
+    result = WriteFile(
+        pipe, // handle to our outbound pipe
+        buffer, // data to send
+        wcslen(buffer) * sizeof(wchar_t), // length of data to send (bytes)
+        &numBytesWritten, // will store actual amount of data sent
+        NULL // not using overlapped IO
+    );
+    if (result) {
+        wcout << "Number of bytes sent: " << numBytesWritten << endl;
+    } else {
+        wcout << "Failed to send data." << endl;
+        // look up error code here using GetLastError()
+    }
+    // Close the pipe (automatically disconnects client too)
+    CloseHandle(pipe);
+    wcout << "Done." << endl;
+    system("pause");
+    return 0;
 }

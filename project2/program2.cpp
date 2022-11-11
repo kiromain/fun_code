@@ -1,42 +1,49 @@
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
+#include <iostream>
+#include <windows.h>
 
-int main(int argc, char *argv[])
+using namespace std;
+
+int main(int argc, const char **argv)
 {
-    char sentence [256];
-    int fp, numr ,numop;
-    
-    /*
-    fp = mkfifo("myfifo", S_IFIFO|0666);
-    if(fp < 0)
-    {
-        printf("Cant make a file\n");
-        return 1;
-    }*/
-    printf("Message: %s\n",sentence); 
-
-    numop = open("myfifo",O_RDONLY);
-    if(numop < 0)
-    {
-        printf("Cant open the file\n");
-        return 1;
-    }
-
-    numr = read(fp,&sentence,sizeof(sentence));
-    if( numr < 0)
-    {
-         printf("Cant read the message\n");
+    wcout << "Connecting to pipe..." << endl;
+    // Open the named pipe
+    // Most of these parameters aren't very relevant for pipes.
+    HANDLE pipe = CreateFileW(
+        L"\\\\.\\pipe\\my_pipe",
+        GENERIC_READ, // only need read access
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+    if (pipe == INVALID_HANDLE_VALUE) {
+        wcout << "Failed to connect to pipe." << endl;
+        // look up error code here using GetLastError()
+        system("pause");
         return 1;
     }
-    fgets(sentence,256,stdin);
-
-    printf("Message: %s\n",sentence);
-    close(fp);
-    
-    return 0; 
+    wcout << "Reading data from pipe..." << endl;
+    // The read operation will block until there is data to read
+    wchar_t buffer[128];
+    DWORD numBytesRead = 0;
+    BOOL result = ReadFile(
+        pipe,
+        buffer, // the data from the pipe will be put here
+        127 * sizeof(wchar_t), // number of bytes allocated
+        &numBytesRead, // this will store number of bytes actually read
+        NULL // not using overlapped IO
+    );
+    if (result) {
+        buffer[numBytesRead / sizeof(wchar_t)] = '\0'; // null terminate the string
+        wcout << "Number of bytes read: " << numBytesRead << endl;
+        wcout << "Message: " << buffer << endl;
+    } else {
+        wcout << "Failed to read data from the pipe." << endl;
+    }
+    // Close our pipe handle
+    CloseHandle(pipe);
+    wcout << "Done." << endl;
+    system("pause");
+    return 0;
 }
