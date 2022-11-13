@@ -1,5 +1,9 @@
-#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string>
 #include <vector>
+#include <iostream>
 #include <fstream>
 
 using namespace std;
@@ -8,6 +12,7 @@ class Tree
 {
 private:
      ofstream ofs;
+     ifstream ifs;
 public:
      string name ;
      vector<Tree*> children;
@@ -69,19 +74,23 @@ public:
                children[i]->print1(nest+1, ok, new_prefix);
           }
      }
-
-     void save(int nest, ofstream &ofs) const
+     //task 4
+     ofstream& save(ofstream &ofs, int nest) 
      {
-
           ofs<<string(nest,'\t')<<name<<endl;
           ++nest;
-          for(const Tree *node:children)
-          {
-               //ofs<<string(nest,'\t')<<name<<endl;
-               //os.write((char*)&n,sizeof(n));
-               node->save(nest,ofstream {"serialize.txt"});
-          }
+          for(Tree *node:children) node->save(ofs, nest);
 
+          return ofs;
+     }
+
+     void savetomyfile(string filename)
+     {
+          ofs.open(filename,ios::out);
+          if(ofs.is_open())
+          {
+               save(ofs, 0);
+          }
      }
 };
 
@@ -101,8 +110,7 @@ int main()
      root->print1(0,true);
      cout<<endl;
 
-     root->save(0,ofstream{"serialize.txt"});
-     cout<<1<<endl;
+     root->savetomyfile("serialize2.txt");
 
      uint32_t rootChildrenCnt = root->GetSubCount(); // result shall be 3
      uint32_t galaz1childrenCount = galaz1->GetSubCount(); // result shall be 1
