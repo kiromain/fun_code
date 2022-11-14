@@ -1,31 +1,49 @@
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <iostream>
+#include <windows.h>
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main(int argc, const char **argv)
 {
-    // FIFO file path
-    /*
-    cout<<"Podaj nazwe lacza: ";
-    string nazwa_lacza;
-    cin>>nazwa_lacza;
-    const char *myfifo = nazwa_lacza.c_str();*/
-
-    int fd = open("myfifo",O_RDONLY);
-    char sentence [256];
-
-    printf ("Wiadomosc od uzytkownika numer 1: ");
-    
-    read(fd,sentence,strlen(sentence)+1);
-
-    printf("Wiadomosc : %s\n", sentence);
-
-    close(fd);
-    return(0); 
+    wcout << "Connecting to pipe..." << endl;
+    // Open the named pipe
+    // Most of these parameters aren't very relevant for pipes.
+    HANDLE pipe = CreateFileW(
+        L"\\\\.\\pipe\\my_pipe",
+        GENERIC_READ, // only need read access
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+    if (pipe == INVALID_HANDLE_VALUE) {
+        wcout << "Failed to connect to pipe." << endl;
+        // look up error code here using GetLastError()
+        system("pause");
+        return 1;
+    }
+    wcout << "Reading data from pipe..." << endl;
+    // The read operation will block until there is data to read
+    wchar_t buffer[128];
+    DWORD numBytesRead = 0;
+    BOOL result = ReadFile(
+        pipe,
+        buffer, // the data from the pipe will be put here
+        127 * sizeof(wchar_t), // number of bytes allocated
+        &numBytesRead, // this will store number of bytes actually read
+        NULL // not using overlapped IO
+    );
+    if (result) {
+        buffer[numBytesRead / sizeof(wchar_t)] = '\0'; // null terminate the string
+        wcout << "Number of bytes read: " << numBytesRead << endl;
+        wcout << "Message: " << buffer << endl;
+    } else {
+        wcout << "Failed to read data from the pipe." << endl;
+    }
+    // Close our pipe handle
+    CloseHandle(pipe);
+    wcout << "Done." << endl;
+    system("pause");
+    return 0;
 }
