@@ -5,12 +5,11 @@ using namespace std;
 
 int main(int argc, const char **argv)
 {
-    wcout << "Connecting to pipe..." << endl;
-    // Open the named pipe
-    // Most of these parameters aren't very relevant for pipes.
+    wcout << "Laczenie z laczem nazwanym..." << endl;
+    // otwiera lacze nazwane
     HANDLE pipe = CreateFileW(
         L"\\\\.\\pipe\\my_pipe",
-        GENERIC_READ, // only need read access
+        GENERIC_READ, // mozna tylko czytac
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         NULL,
         OPEN_EXISTING,
@@ -18,32 +17,32 @@ int main(int argc, const char **argv)
         NULL
     );
     if (pipe == INVALID_HANDLE_VALUE) {
-        wcout << "Failed to connect to pipe." << endl;
-        // look up error code here using GetLastError()
+        wcout << "Blad w polaczeniu lacza." << endl;
+        // sprawdza bledy w kodzie za pomoca GetLastError()
         system("pause");
         return 1;
     }
-    wcout << "Reading data from pipe..." << endl;
-    // The read operation will block until there is data to read
+    wcout << "Czytanie wiadomosci z lacza..." << endl;
+    
     wchar_t buffer[128];
     DWORD numBytesRead = 0;
     BOOL result = ReadFile(
         pipe,
-        buffer, // the data from the pipe will be put here
-        127 * sizeof(wchar_t), // number of bytes allocated
-        &numBytesRead, // this will store number of bytes actually read
-        NULL // not using overlapped IO
+        buffer, // wiadomosc z lacza bedzie w buffer przechowywana
+        127 * sizeof(wchar_t), // ilosc bytow przeznaczonych
+        &numBytesRead, //przechowuje ilosc bytow potrzebnych do odczytu wiadomosci
+        NULL 
     );
     if (result) {
-        buffer[numBytesRead / sizeof(wchar_t)] = '\0'; // null terminate the string
-        wcout << "Number of bytes read: " << numBytesRead << endl;
-        wcout << "Message: " << buffer << endl;
+        buffer[numBytesRead / sizeof(wchar_t)] = '\0';
+        wcout << "Ilosc bytow odczytanych: " << numBytesRead << endl;
+        wcout << "Wiadomosc: " << buffer << endl;
     } else {
-        wcout << "Failed to read data from the pipe." << endl;
+        wcout << "Blad odczytania wiadomosci." << endl;
     }
-    // Close our pipe handle
+    // Zamyka lacza nazwane
     CloseHandle(pipe);
-    wcout << "Done." << endl;
+    wcout << "Koniec." << endl;
     system("pause");
     return 0;
 }

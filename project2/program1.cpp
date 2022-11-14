@@ -1,54 +1,3 @@
-<<<<<<< HEAD
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <iostream>
-#include <stdlib.h>
-#include <dirent.h>
-
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <errno.h>
-
-int main(int argc, char *argv[])
-{
-    int fd;
-
-    // FIFO file path
-    /*
-    cout<<"Podaj nazwe lacza: ";
-    string nazwa_lacza;
-    cin>>nazwa_lacza;
-    const char *myfifo = nazwa_lacza.c_str();*/
-
-    if((mkfifo("myfifo", 0777)) < 0){
-    	printf("Nie mozna stworzyc pliku\n");
-    	return 1;
-	}
-
-    fd = open("myfifo", O_WRONLY);
-    if(fd < 0)
-    {
-        printf("Nie mozna otworzyc pliku\n");
-        return 1;
-    }
-
-    char sentence [256];
-    printf ("Wprowadz wiadomosc : ");
-    cin.getline(sentence,250,'END');
-
-    if((write(fd,sentence,strlen(sentence)+1))<0){
-        printf("\n %s \n", strerror(errno));
-        return 1;
-    }
-
-    close(fd);
-    return 0; 
-
-    
-}
-=======
 #include <iostream>
 #include <windows.h>
 #include <stdio.h>
@@ -57,57 +6,56 @@ using namespace std;
 
 int main(int argc, const char **argv)
 {
-    wcout << "Creating an instance of a named pipe..." << endl;
-    // Create a pipe to send data
+    wcout << "Tworzenie lacza nazwanego..." << endl;
+    // tworzy lacze nazwane
     HANDLE pipe = CreateNamedPipeW(
-        L"\\\\.\\pipe\\my_pipe", // name of the pipe
-        PIPE_ACCESS_OUTBOUND, // 1-way pipe -- send only
-        PIPE_TYPE_BYTE, // send data as a byte stream
-        1, // only allow 1 instance of this pipe
-        0, // no outbound buffer
-        0, // no inbound buffer
-        0, // use default wait timeWS
-        NULL // use default security attributes
+        L"\\\\.\\pipe\\my_pipe", // nazwa lacza
+        PIPE_ACCESS_OUTBOUND, // moze wysylac tylko
+        PIPE_TYPE_BYTE, // wysyla wiadomosc jako byte stream
+        1, // pozwala na jedno polaczenie
+        0, // brak wychodzacego bufora
+        0, // brak wchodzacego bufora
+        0, // defaultowe timeWS
+        NULL // defaultowwe bezpieczenstwo
     );
     if (pipe == NULL || pipe == INVALID_HANDLE_VALUE) {
-        wcout << "Failed to create outbound pipe instance.";
-        // look up error code here using GetLastError()
+        wcout << "Blad tworzenie lacza do wyslania... ";
+        // sprawdza bledy w kodzie za pomoca GetLastError()
         system("pause");
         return 1;
     }
-    wcout << "Waiting for a client to connect to the pipe..." << endl;
-    // This call blocks until a client process connects to the pipe
+    wcout << "Czeka na polaczenie sie drugiej osoby..." << endl;
+    
     BOOL result = ConnectNamedPipe(pipe, NULL);
     if (!result) {
-        wcout << "Failed to make connection on named pipe." << endl;
-        // look up error code here using GetLastError()
-        CloseHandle(pipe); // close the pipe
+        wcout << "Blad w polaczeniu lacza..." << endl;
+        // sprawdza blad kodu za pomoca GetLastError()
+        CloseHandle(pipe); // zamyka lacze 
         system("pause");
         return 1;
     }
-    wcout << "Sending data to pipe..." << endl;
-    // This call blocks until a client process reads all the data
+    wcout << "Wysylanie wiadomosci do klienta..." << endl;
+
     wchar_t buffer[256];
-    fgetws(buffer,256,stdin);
+    fgetws(buffer,256,stdin); // wprowdzenie wiadomosci do terminala
 
     DWORD numBytesWritten = 0;
     result = WriteFile(
-        pipe, // handle to our outbound pipe
-        buffer, // data to send
-        wcslen(buffer) * sizeof(wchar_t), // length of data to send (bytes)
-        &numBytesWritten, // will store actual amount of data sent
-        NULL // not using overlapped IO
+        pipe,
+        buffer, // wiadomosc wyslana
+        wcslen(buffer) * sizeof(wchar_t), // rozmiar wyslanej wiadomosci w bytach (bytes)
+        &numBytesWritten, // przechowuje rozmiar wyslanej wiadomosci
+        NULL 
     );
     if (result) {
-        wcout << "Number of bytes sent: " << numBytesWritten << endl;
+        wcout << "Byte wyslane: " << numBytesWritten << endl;
     } else {
-        wcout << "Failed to send data." << endl;
-        // look up error code here using GetLastError()
+        wcout << "Blad w wysylaniu." << endl;
+        // sprawdza blad kodu za pomoca GetLastError()
     }
-    // Close the pipe (automatically disconnects client too)
+    // konczy lacze nazwane (rozlacza drugiego uzytkownika)
     CloseHandle(pipe);
-    wcout << "Done." << endl;
+    wcout << "Koniec." << endl;
     system("pause");
     return 0;
 }
->>>>>>> 3d8023f4c3bea42fa1f59d2e1b867b2ccf76883c
