@@ -53,7 +53,7 @@ public:
                     *source_ &= ~char(1 << bit);
                }
           }
-
+/*
           BitIterator& operator--() {
                if (bit == 0) --source_;
                bit--;
@@ -67,8 +67,8 @@ public:
 
                return bits;
           }
-
-     };
+*/
+};
 
 public:
 
@@ -92,7 +92,7 @@ public:
 
           return bitsOccupied_;
      }
-
+     /*
      uint32_t Get(uint32_t const bitLength, void* dataAddr)
      {
 
@@ -112,7 +112,7 @@ public:
 
           return bitsOccupied_;
      }
-     /*
+     
      uint32_t GetBitLength()
      {
           return bitsOccupied_;
@@ -146,12 +146,11 @@ int main()
      auto x = 2;
 
      stream.Add(2, &x);
-     //stream.Add(2, &x);
-     //stream.Add(4, &x);
-     //stream.Add(2, &x);
+     stream.Add(2, &x);
+     stream.Add(4, &x);
+     stream.Add(2, &x);
 
      cout << stream.data_.size() << '\n';
-     cout<<x<<endl;
      cout << bitset<8>(static_cast<uint8_t>(stream.data_[0]));
 
 }

@@ -12,7 +12,6 @@ class Tree
 {
 private:
      ofstream ofs;
-     ifstream ifs;
 public:
      string name ;
      vector<Tree*> children;

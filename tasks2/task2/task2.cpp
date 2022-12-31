@@ -127,7 +127,7 @@ class Inher : public Stack<T>
 {
 public:
 
-     T getfrombottom()
+     T* getfrombottom()
      {
           int count1 = this->getcounts();
           if(this->head == NULL) cout<<"List is empty"<<endl;
@@ -152,12 +152,14 @@ public:
           }
      }
 
-     T getfromanywhere(int x)
+     T* getfromanywhere(unsigned int x)
      {
           Node<T> *current = this->head;
           if(this->head == NULL) cout<<"List is empty"<<endl;
 
           int counts = this->getcounts();
+
+          if(x>counst-1) return nullptr;
 
           if(x == 0)
           {
@@ -171,6 +173,7 @@ public:
                while(current->next->next != NULL ) current = current->next;
 
                T data1 = current->next->data;
+               
                current->next = NULL;
                delete this->tail;
                this->tail = current;
