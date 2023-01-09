@@ -31,7 +31,7 @@ private:
     QStandardItemModel *model;
     Tree *root;
 
-    void saveTree(Tree* tree, QFile &file,int depth);
+    void saveTree(Tree* tree,QFile &file,int depth);
 
 };
 

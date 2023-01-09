@@ -144,7 +144,7 @@ void MainWindow::saveToFile()
     file.close();
 }
 
-void MainWindow::saveTree(Tree *tree, QFile &file,int depth)
+void MainWindow::saveTree(Tree *tree,QFile &file,int depth)
 {
     //Zapis do pliku
     QTextStream stream(&file);
@@ -158,7 +158,6 @@ void MainWindow::saveTree(Tree *tree, QFile &file,int depth)
     foreach (Tree *child, tree->children()) {
         saveTree(child, file, depth + 1);
     }
-
 
 }
 
