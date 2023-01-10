@@ -9,7 +9,7 @@
 #include <QInputDialog>
 #include <QModelIndexList>
 #include <QStack>
-
+#include <QModelIndex>
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget{parent}
@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(addButton);
     QPushButton *removeButton = new QPushButton("Remove");
     layout->addWidget(removeButton);
+    QPushButton *moveButton = new QPushButton("Move");
+    layout->addWidget(moveButton);
     QPushButton *saveButton = new QPushButton("Save");
     layout->addWidget(saveButton);
     QPushButton *readButton = new QPushButton("Read");
@@ -45,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(removeButton, &QPushButton::clicked, this, &MainWindow::removeItem);
     connect(saveButton, &QPushButton::clicked, this, &MainWindow::saveToFile);
     connect(readButton, &QPushButton::clicked, this, &MainWindow::readFromFile);
-
+    connect(moveButton, &QPushButton::clicked, this, &MainWindow::moveItem);
     setLayout(layout);
 }
 
@@ -122,6 +124,66 @@ void MainWindow::removeItem()
     }
     parent->removeRow(item->row());
 }
+
+void MainWindow::moveItem() {
+    // Get the source and destination indices
+    QModelIndex sourceIndex = treeView->currentIndex();
+    QModelIndex destinationIndex = getDestinationIndex();
+    if (!sourceIndex.isValid() || !destinationIndex.isValid()) {
+        return;
+    }
+
+    // Get the source and destination items
+    QStandardItem *sourceItem = model->itemFromIndex(sourceIndex);
+    QStandardItem *destinationItem = model->itemFromIndex(destinationIndex);
+    if (!sourceItem || !destinationItem) {
+        return;
+    }
+
+    // Remove the source item from its current location
+    int sourceRow = sourceIndex.row();
+    int sourceCol = sourceIndex.column();
+    sourceItem->parent()->removeRow(sourceRow);
+
+    // Insert the source item at the destination location
+    int destinationRow = destinationIndex.row();
+    destinationItem->insertRow(destinationRow, sourceItem);
+
+    // update tree data
+    // update tree data
+    Tree *sourceTree = getTreeFromIndex(sourceIndex);
+    Tree *destinationTree = getTreeFromIndex(destinationIndex);
+
+    sourceTree->parent()->removeChild(sourceTree);
+    destinationTree->addChild(sourceTree);
+
+}
+
+
+QModelIndex MainWindow::getDestinationIndex()
+{
+    // Show a dialog to get the destination item name
+    bool ok;
+    QString destinationName = QInputDialog::getText(this, "Move Item", "Enter destination name:", QLineEdit::Normal, QString(), &ok);
+    if (!ok || destinationName.isEmpty())
+    {
+        return QModelIndex();
+    }
+
+    // Search the model for the destination item
+    QList<QStandardItem*> items = model->findItems(destinationName);
+    if (items.isEmpty())
+    {
+        QMessageBox::warning(this, "Move Item", "Cannot find destination item.");
+        return QModelIndex();
+    }
+
+    // Return the index of the first item found
+    return model->indexFromItem(items.first());
+}
+
+
+
 
 void MainWindow::saveToFile()
 {

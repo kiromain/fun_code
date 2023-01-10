@@ -22,6 +22,7 @@ private slots:
      void removeItem();
      void saveToFile();
      void readFromFile();
+     void moveItem();
 
 private:
 
@@ -29,6 +30,7 @@ private:
     Tree* modelIndexToTree(const QModelIndex &index);
     QTreeView *treeView;
     QStandardItemModel *model;
+    QModelIndex getDestinationIndex();
     Tree *root;
 
     void saveTree(Tree* tree,QFile &file,int depth);
